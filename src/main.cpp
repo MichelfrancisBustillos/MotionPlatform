@@ -6,11 +6,16 @@
 
 //Function Definitions
 int SerialIO();
+int getDistance();
+
+//Pin Definitions
+#define trigPin 13 //Ultrasonic trigger pin
+#define echoPin 12 //Ultrasonic echo pin
 
 //Global Variable and Object Definitions
-int motorRPM = 1000;
-int motorMaxRPM = 1000;
-int stepsPerRotation = 200;
+int motorRPM = 1000; //Motor standard RPM, also used for acceleration
+int motorMaxRPM = 1000; //Motor max RPM
+int stepsPerRotation = 200; //Steps per 1 rotation of stepper motor
 Adafruit_MotorShield motorshield = Adafruit_MotorShield(); //Adafruit MotorShield Object
 Adafruit_StepperMotor *motor1 = motorshield.getStepper(stepsPerRotation, 2); //Stepper motor object pointer
 Adafruit_StepperMotor *motor2 = motorshield.getStepper(stepsPerRotation, 1); //Stepper motor object pointer
@@ -22,6 +27,10 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
   Serial.println("Serial Initialized!");
+
+  //Initialize Pins
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 
   //Initialize Motorshield
   if(!motorshield.begin()){
@@ -43,6 +52,13 @@ void setup() {
 
 void loop() {
   int steps = SerialIO();
+  int distance = getDistance();
+
+  if ((distance < 10) && (distance > 0)){
+    Serial.print("Obstacle detected! Distance: ");
+    Serial.println(distance);
+    steps = 1;
+  }
 
   if(stepper1.distanceToGo() == 0){
     stepper1.move(steps);
@@ -60,12 +76,24 @@ int SerialIO(){
   int steps = 0;
   if(Serial.available()){
     userInput = Serial.readStringUntil('\n');
-    steps = (userInput.toInt() * stepsPerRotation);
+    steps = (userInput.toDouble() * stepsPerRotation);
     Serial.print("Moving... ");
-    Serial.print(userInput.toInt());
+    Serial.print(userInput.toDouble());
     Serial.print(" rotations (");
     Serial.print(steps);
     Serial.println(" steps).");
   }
   return steps;
+}
+
+int getDistance(){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  int duration = pulseIn(echoPin, HIGH);
+  int distance = duration * 0.034 / 2;
+
+  return distance;
 }
