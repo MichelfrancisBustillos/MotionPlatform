@@ -2,25 +2,29 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include <AccelStepper.h>
+#include <NewPing.h>
 #include "stepperControl.h"
 
 //Function Definitions
 int SerialIO();
-int getDistance();
+void getDistance();
 
 //Pin Definitions
 #define trigPin 13 //Ultrasonic trigger pin
 #define echoPin 12 //Ultrasonic echo pin
 
 //Global Variable and Object Definitions
-int motorRPM = 1000; //Motor standard RPM, also used for acceleration
-int motorMaxRPM = 1000; //Motor max RPM
+int motorMaxSPS = 520; //Motor max steps per second
 int stepsPerRotation = 200; //Steps per 1 rotation of stepper motor
+unsigned int pingSpeed = 50; //Ping frequency in MS
+unsigned long pingTimer; //Place holder for next ping time
+int distance; //Distance from obstacle
 Adafruit_MotorShield motorshield = Adafruit_MotorShield(); //Adafruit MotorShield Object
 Adafruit_StepperMotor *motor1 = motorshield.getStepper(stepsPerRotation, 2); //Stepper motor object pointer
 Adafruit_StepperMotor *motor2 = motorshield.getStepper(stepsPerRotation, 1); //Stepper motor object pointer
 AccelStepper stepper1(forwardstep1,backwardstep1);
 AccelStepper stepper2(forwardstep2, backwardstep2);
+NewPing sonar(trigPin, echoPin); //Ultrasonic sensor object
 
 void setup() {
   //Initialize Serial Coms
@@ -29,8 +33,8 @@ void setup() {
   Serial.println("Serial Initialized!");
 
   //Initialize Pins
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
+  //pinMode(trigPin, OUTPUT);
+  //pinMode(echoPin, INPUT);
 
   //Initialize Motorshield
   if(!motorshield.begin()){
@@ -40,24 +44,34 @@ void setup() {
   Serial.println("Motorshield Initialized!");
 
   //Initialize Stepper Settings
-  stepper1.setMaxSpeed(motorMaxRPM); 
-  stepper1.setSpeed(motorRPM);
-  stepper1.setAcceleration(motorRPM);
-  stepper2.setMaxSpeed(motorMaxRPM);
-  stepper2.setSpeed(motorRPM); 
-  stepper2.setAcceleration(motorRPM);
+  stepper1.setMaxSpeed(motorMaxSPS); 
+  stepper1.setAcceleration(motorMaxSPS);
+  stepper2.setMaxSpeed(motorMaxSPS);
+  stepper2.setAcceleration(motorMaxSPS);
+
+  pingTimer = millis(); //Start ping timer
 
   TWBR = ((F_CPU /400000l) - 16) / 2; // Change the i2c clock to 400KHz
 }
 
 void loop() {
+  //Set motor speed to 50% of max
+  stepper1.setSpeed((motorMaxSPS/2));
+  stepper2.setSpeed((motorMaxSPS/2));
+  
+  //Get Input (Serial & Ultrasonic)
   int steps = SerialIO();
-  int distance = getDistance();
 
-  if ((distance < 10) && (distance > 0)){
+  if (millis() >= pingTimer){
+    pingTimer += pingSpeed;
+    sonar.ping_timer(getDistance);
+  }
+
+  if (distance < 10){
     Serial.print("Obstacle detected! Distance: ");
     Serial.println(distance);
-    steps = 1;
+    stepper1.stop();
+    stepper2.stop();
   }
 
   if(stepper1.distanceToGo() == 0){
@@ -67,8 +81,8 @@ void loop() {
     stepper2.move(steps);
   }
 
-  stepper1.run();
-  stepper2.run();
+  stepper1.runSpeedToPosition();
+  stepper2.runSpeedToPosition();
 }
 
 int SerialIO(){
@@ -86,14 +100,8 @@ int SerialIO(){
   return steps;
 }
 
-int getDistance(){
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  int duration = pulseIn(echoPin, HIGH);
-  int distance = duration * 0.034 / 2;
-
-  return distance;
-}
+void getDistance(){
+  if (sonar.check_timer()){
+    distance = (sonar.ping_result / US_ROUNDTRIP_CM);
+  }
+} 
