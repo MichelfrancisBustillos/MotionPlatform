@@ -20,8 +20,8 @@ custom_servo y_servo; //Custom servo object for y movement
 WiFiManager wifi; //WiFiManager object
 WiFiClient espClient;
 std::unique_ptr<my_WebServer> server; //Create web server object
-
-int movement;
+int movement; //Global variable for storing movement values
+bool status_led = false; //Global variable for status LED status
 
 void setup() {
   //Initialize Serial Coms
@@ -60,6 +60,8 @@ void setup() {
   //Initialize WebServer
   server->on("/", handle_OnConnect);
   server->on("/test", handle_OnConnect);
+  server->on("/led_on", handle_LedOn);
+  server->on("/led_off", handle_LedOff);
   server->onNotFound(handle_NotFound);
   server->begin();
   Serial.println("Web Server Initialized!");
@@ -68,7 +70,7 @@ void setup() {
 void loop() {
   serialIO();
   wifi.process();
-  digitalWrite(LED_BUILTIN, WiFi.status() == WL_CONNECTED); //Turn on onboard LED as wifi status indicator
+  //digitalWrite(LED_BUILTIN, WiFi.status() == WL_CONNECTED); //Turn on onboard LED as wifi status indicator
   server->handleClient();
 }
 
