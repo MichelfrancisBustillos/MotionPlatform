@@ -36,7 +36,8 @@
 
 - Complete:  
   - X & Y Servo control methods via human readable commands
-  - Basic web interface for jogging and homing servos
+  - Basic web interface for jogging and homing servos  
+  ![webGUI](/Docs/webGUI.png)
   - WifiManager for wifi configuration
   - SPIFFS onboard file system
   - Three part web interface framework (HTML, JavaScript, CSS)
