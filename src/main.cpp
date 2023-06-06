@@ -21,7 +21,7 @@ custom_servo y_servo; //Custom servo object for y movement
 WiFiManager wifi; //WiFiManager object
 WiFiClient espClient;
 AsyncWebServer server(80); //Create web server object
-AsyncWebSocket socket("/socket"); //Create webSocket object
+AsyncEventSource events("/events");
 int movement; //Global variable for storing movement values
 const char* PARAM_INPUT = "value"; //Web parameter input
 

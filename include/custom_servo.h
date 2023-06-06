@@ -30,8 +30,11 @@ void custom_servo::move(int movement){
     }
 
 void custom_servo::home(){
-    Serial.print("Homing servo...");
+    Serial.println("Homing servo...");
+    servo.attach(pin);
     servo.write(home_position);
+    delay(wait);
+    servo.detach();
 }
 
 #endif
