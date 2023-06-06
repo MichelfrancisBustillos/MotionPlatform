@@ -4,25 +4,19 @@
         <title>PTZ Control</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="style.css">
-        <script>
-            function submitData(){
-                setTimeout(function(){
-                    document.location.reload(false);
-                }, 1000);
-            }
-        </script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
         <h2>PTZ Control</h2>
         <p>
-            Y:
-            <span id="y_slider_text">%Y_SLIDER_VALUE%</span>
-            Y_Min:
-            <span id="y_slider_min">%Y_SERVO_MIN%</span>
-            Y_Max:
-            <span id="y_slider_max">%Y_SERVO_MIN%</span>
+            <form action='action' method='post'>
+                <input type='submit' name='Up' value=&uarr;><br>
+                <input type='submit' name='Left' value=&larr;>
+                <input type='submit' name='Right' value=&rarr;><br><br>
+                <input type='submit' name='Down' value=&darr;><br><br>
+                <input type='submit' name='Home' value="Home">
+            </form>
         </p>
-        <p><input type="range" onchange="updateSliderPWM(this)" id="y_slider" min="%Y_SERVO_MIN%" max="%Y_SERVO_MAX%" value="%Y_SLIDER_VALUE%" step="1" class="slider"></p>
         <script src="script.js"></script>
     </body>
 </html>

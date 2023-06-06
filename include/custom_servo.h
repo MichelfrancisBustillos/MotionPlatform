@@ -14,6 +14,7 @@ class custom_servo {
     int home_position;
     void move(int);
     void home();
+    void jog(String);
 };
 
 void custom_servo::move(int movement){
@@ -24,6 +25,7 @@ void custom_servo::move(int movement){
             servo.write(movement);
             delay(wait);
             servo.detach();
+            current_position = movement;
         } else {
             Serial.println("Invalid movement!");
         }
@@ -35,6 +37,7 @@ void custom_servo::home(){
     servo.write(home_position);
     delay(wait);
     servo.detach();
+    current_position = home_position;
 }
 
 #endif
