@@ -86,12 +86,11 @@ void setup() {
     if (request->hasParam(PARAM_INPUT)) {
       inputMessage = request->getParam(PARAM_INPUT)->value();
       sliderValue = inputMessage;
-      x_servo.move(sliderValue.toInt());
+      y_servo.move(sliderValue.toInt());
     }
     else {
       inputMessage = "No message sent";
     }
-    Serial.println(inputMessage);
     request->send(200, "text/plain", "OK");
   });
   server.onNotFound(pageNotFound);
