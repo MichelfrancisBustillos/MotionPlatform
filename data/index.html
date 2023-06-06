@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>PTZ Control</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script>
+            function submitData(){
+                setTimeout(function(){
+                    document.location.reload(false);
+                }, 1000);
+            }
+        </script>
+    </head>
+    <body>
+        <h2>PTZ Control</h2>
+        <p>
+            <span id="x_slider_text">X: %X_SLIDER_VALUE%</span>
+            <span id="y_slider_text">Y: %Y_SLIDER_VALUE%</span>
+        </p>
+        <p><input type="range" onchange="updateSliderPWM(this)" id="x_slider" min="%X_SERVO_MIN" max="%X_SERVO_MAX" value="%X_SLIDER_VALUE%" step="1" class="slider"></p>
+        <p><input type="range" onchange="updateSliderPWM(this)" id="y_slider" min="%Y_SERVO_MIN" max="%Y_SERVO_MAX" value="%Y_SLIDER_VALUE%" step="1" class="slider"></p>
+        <script src="script.js"></script>
+    </body>
+</html>

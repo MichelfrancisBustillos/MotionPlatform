@@ -9,7 +9,11 @@ class custom_servo {
     int min;
     int pin;
     int wait;
+    int value;
+    int center = ((max+min)/2);
+    int home_position;
     void move(int);
+    void home();
 };
 
 void custom_servo::move(int movement){
@@ -24,5 +28,10 @@ void custom_servo::move(int movement){
             Serial.println("Invalid movement!");
         }
     }
+
+void custom_servo::home(){
+    Serial.print("Homing servo...");
+    servo.write(home_position);
+}
 
 #endif
