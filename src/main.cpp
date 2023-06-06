@@ -9,6 +9,8 @@
 
 //Function Definitions
 void serialIO();
+void servoJog(String);
+void servoHomeAll();
 
 //Pin Definitions
 #define X_SERVO_PIN 32
@@ -23,9 +25,6 @@ WiFiClient espClient;
 AsyncWebServer server(80); //Create web server object
 AsyncEventSource events("/events");
 int movement; //Global variable for storing movement values
-const char* PARAM_INPUT = "value"; //Web parameter input
-
-String sliderValue = "0";
 
 void setup() {
   //Initialize Serial Coms
@@ -53,8 +52,7 @@ void setup() {
   x_servo.max = 160;
   x_servo.home_position = x_servo.center;
   x_servo.wait = 700;
-  y_servo.home();
-  x_servo.home();
+  servoHomeAll();
   Serial.println("Servos Initialized!");
 
   //Initialize Wifi
@@ -72,7 +70,7 @@ void setup() {
   
   //Initialize WebServer
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/index.html", String(), false, processor); //Load home page
+    request->send(SPIFFS, "/index.html", String(), false); //Load home page
   });
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/style.css", "text/css"); //Load CSS style sheet
@@ -80,19 +78,7 @@ void setup() {
   server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/script.js", "text/css");
   });
-  server.on("/slider", HTTP_POST, [](AsyncWebServerRequest *request){
-    String inputMessage;
-    // GET input1 value on <ESP_IP>/slider?value=<inputMessage>
-    if (request->hasParam(PARAM_INPUT)) {
-      inputMessage = request->getParam(PARAM_INPUT)->value();
-      sliderValue = inputMessage;
-      y_servo.move(sliderValue.toInt());
-    }
-    else {
-      inputMessage = "No message sent";
-    }
-    request->send(200, "text/plain", "OK");
-  });
+  server.on("/action", HTTP_POST, action);
   server.onNotFound(pageNotFound);
   server.begin();
   Serial.println("Web Server Initialized!");
@@ -101,7 +87,7 @@ void setup() {
 void loop() {
   serialIO();
   wifi.process();
-  //digitalWrite(LED_BUILTIN, WiFi.status() == WL_CONNECTED); //Turn on onboard LED as wifi status indicator
+  digitalWrite(LED_BUILTIN, WiFi.status() == WL_CONNECTED); //Turn on onboard LED as wifi status indicator
 }
 
 void serialIO(){
@@ -113,4 +99,25 @@ void serialIO(){
     x_servo.move(movement);
     y_servo.move(movement);
   }
+}
+
+void servoJog(String direction){
+  int jogStep = 1;
+  if(direction == "Left"){
+    x_servo.move(x_servo.current_position + jogStep);
+  } else if (direction == "Right"){
+    x_servo.move(x_servo.current_position - jogStep);
+  } else if (direction == "Up"){
+    y_servo.move(y_servo.current_position + jogStep);
+  } else if (direction == "Down"){
+    y_servo.move(y_servo.current_position - jogStep);
+  } else if (direction == "Home"){
+    servoHomeAll();
+  }
+}
+
+void servoHomeAll(){
+  Serial.println("Homing all servos...");
+  x_servo.home();
+  y_servo.home();
 }
