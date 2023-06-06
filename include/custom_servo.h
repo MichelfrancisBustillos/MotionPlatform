@@ -9,7 +9,7 @@ class custom_servo {
     int min;
     int pin;
     int wait;
-    int value;
+    int current_position;
     int center = ((max+min)/2);
     int home_position;
     void move(int);
