@@ -1,6 +1,8 @@
 # MotionPlatform
 
-[![License](github/license/:user/:repo)]
+![License](https://img.shields.io/github/license/MichelfrancisBustillos/MotionPlatform)
+![Languages](https://img.shields.io/github/languages/count/MichelfrancisBustillos/MotionPlatform)
+![TopLanguage](https://img.shields.io/github/languages/top/MichelfrancisBustillos/MotionPlatform)
 
 ## Description
   
