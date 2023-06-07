@@ -2,36 +2,42 @@
 #define custom_servo_h
 #include <ESP32Servo.h>
 
-class custom_servo {
-  public:
+class custom_servo
+{
+public:
     Servo servo;
     int max;
     int min;
     int pin;
     int wait;
     int current_position;
-    int center = ((max+min)/2);
+    int center = ((max + min) / 2);
     int home_position;
     void move(int);
     void home();
     void jog(String);
 };
 
-void custom_servo::move(int movement){
-        Serial.print("Received: ");
-        Serial.println(movement);
-        if (movement >= min && movement <= max){
-            servo.attach(pin);
-            servo.write(movement);
-            delay(wait);
-            servo.detach();
-            current_position = movement;
-        } else {
-            Serial.println("Invalid movement!");
-        }
+void custom_servo::move(int movement)
+{
+    Serial.print("Received: ");
+    Serial.println(movement);
+    if (movement >= min && movement <= max)
+    {
+        servo.attach(pin);
+        servo.write(movement);
+        delay(wait);
+        servo.detach();
+        current_position = movement;
     }
+    else
+    {
+        Serial.println("Invalid movement!");
+    }
+}
 
-void custom_servo::home(){
+void custom_servo::home()
+{
     Serial.println("Homing servo...");
     servo.attach(pin);
     servo.write(home_position);
