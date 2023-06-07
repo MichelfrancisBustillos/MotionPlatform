@@ -1,5 +1,7 @@
 # MotionPlatform
 
+[![License](github/license/:user/:repo)]
+
 ## Description
   
   Object tracking system with Raspberry Pi based vision processing (for object recognition) and ESP32 based pan and tilt camera mount.
