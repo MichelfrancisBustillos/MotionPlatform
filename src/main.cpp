@@ -144,5 +144,3 @@ void servoHomeAll()
   x_servo.home();
   y_servo.home();
 }
-
-// CI Test
