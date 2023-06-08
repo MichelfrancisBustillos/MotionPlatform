@@ -13,12 +13,11 @@ public:
     int current_position;
     int center = ((max + min) / 2);
     int home_position;
-    void move(int);
+    void moveToStep(int);
     void home();
-    void jog(String);
 };
 
-void custom_servo::move(int movement)
+void custom_servo::moveToStep(int movement)
 {
     Serial.print("Received: ");
     Serial.println(movement);

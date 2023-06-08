@@ -4,6 +4,8 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
+#include <SerialTransfer.h>
+#include <Wire.h>
 #include "custom_servo.h"
 #include "webHandler.h"
 
@@ -18,13 +20,19 @@ void servoHomeAll();
 #define LED_BUILTIN 2
 
 // Global Variable and Object Definitions
-custom_servo x_servo; // Custom servo object for x movement
-custom_servo y_servo; // Custom servo object for y movement
-WiFiManager wifi;     // WiFiManager object
-WiFiClient espClient;
+custom_servo x_servo;      // Custom servo object for x movement
+custom_servo y_servo;      // Custom servo object for y movement
+WiFiManager wifi;          // WiFiManager object
+WiFiClient espClient;      // WiFiClient object
 AsyncWebServer server(80); // Create web server object
-AsyncEventSource events("/events");
-int movement; // Global variable for storing movement values
+SerialTransfer myTransfer; // Serial Transfer object for Serial coms
+int movement;              // Global variable for storing movement values
+
+struct __attribute__((packed)) STRUCT
+{
+  char direction; // Incoming direction command
+  int value;      // Incoming value command
+} rxStruct;       // Struct for incoming data
 
 void setup()
 {
@@ -91,13 +99,23 @@ void setup()
   server.onNotFound(pageNotFound);
   server.begin();
   Serial.println("Web Server Initialized!");
+
+  // Initialize SerialTransfer
+  myTransfer.begin(Serial);
+  Serial.println("SerialTransfer Initialized!");
 }
 
 void loop()
 {
-  serialIO();
+  // serialIO();
   wifi.process();
   digitalWrite(LED_BUILTIN, WiFi.status() == WL_CONNECTED); // Turn on onboard LED as wifi status indicator
+
+  if (myTransfer.available())
+  {
+    myTransfer.rxObj(rxStruct, sizeof(rxStruct));
+    Serial.print(rxStruct.direction);
+  }
 }
 
 void serialIO()
@@ -108,8 +126,8 @@ void serialIO()
   {
     userInput = Serial.readStringUntil('\n');
     movement = userInput.toInt();
-    x_servo.move(movement);
-    y_servo.move(movement);
+    x_servo.moveToStep(movement);
+    y_servo.moveToStep(movement);
   }
 }
 
@@ -118,19 +136,19 @@ void servoJog(String direction)
   int jogStep = 1;
   if (direction == "Left")
   {
-    x_servo.move(x_servo.current_position + jogStep);
+    x_servo.moveToStep(x_servo.current_position + jogStep);
   }
   else if (direction == "Right")
   {
-    x_servo.move(x_servo.current_position - jogStep);
+    x_servo.moveToStep(x_servo.current_position - jogStep);
   }
   else if (direction == "Up")
   {
-    y_servo.move(y_servo.current_position + jogStep);
+    y_servo.moveToStep(y_servo.current_position + jogStep);
   }
   else if (direction == "Down")
   {
-    y_servo.move(y_servo.current_position - jogStep);
+    y_servo.moveToStep(y_servo.current_position - jogStep);
   }
   else if (direction == "Home")
   {
