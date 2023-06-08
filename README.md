@@ -8,10 +8,9 @@
   
   Object tracking system with Raspberry Pi based vision processing (for object recognition) and ESP32 based pan and tilt camera mount.
   The ultimate goal is to design a system that can identify a 'target' (specific person or object) and track it within the systems range of mobility. This project is an attempt to incorperate various hardware and software technologies into a single system that has practical applications.
+  **This is the ESP32 portion of this project. The other half can be found at [MichelfrancisBustillos/VisionPlatform](https://github.com/MichelfrancisBustillos/VisionPlatform).**
 
 ## Dependencies
-  
-### ESP32
 
 - [AsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
 - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
@@ -21,24 +20,24 @@
 - [SPIFFS](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/spiffs.html)
 - [Wire](https://www.arduino.cc/reference/en/language/functions/communication/wire/)
 
-### Stats
+## Stats
 
 - ESP32 Pinout:
   - X Servo: 32
   - Y Servo: 33
   - Onboard LED: 2 (used for status indication)
 
-### Notes
+## Notes
 
   ESP32 webGUI may not be necessary once serial based control is established. A web interface hosted on the primary vision processing unit may be preferred due to easier integration with the camera system and greater processing power.
 
-### Roadmap
+## Roadmap
 
   Currently working on creating a stable ESP32 codebase for controlling servos via webGUI and serial.
   Once this is complete, proceed to scripting of external control (via Python & Serial).
   After reliable programmatic external control is established, implement vision processing system to identify and track targets.
 
-#### Software
+### Software
 
 - Complete:  
   - X & Y Servo control methods via human readable commands
@@ -55,7 +54,7 @@
   - Expand SerialIO for RPi communication
   - Begin Python script for control from external device (to be integrated with upcoming vision processing system)
 
-#### Hardware
+### Hardware
 
 - Complete:
 - To-Do:
@@ -63,7 +62,7 @@
   - Begin PTZ mount design
   - Consider additional hardware features such as zoom/focus control servo, switchable IR & visible illumination, and status indicators.
 
-#### Documentation
+### Documentation
 
 - Complete:
 
