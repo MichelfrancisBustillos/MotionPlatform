@@ -16,9 +16,7 @@
 - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
 - [WifiManager](https://github.com/tzapu/WiFiManager)
 - [ESP32Servo](https://github.com/madhephaestus/ESP32Servo)
-- [SerialTransfer](https://github.com/PowerBroker2/SerialTransfer)
 - [SPIFFS](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/spiffs.html)
-- [Wire](https://www.arduino.cc/reference/en/language/functions/communication/wire/)
 
 ## Stats
 

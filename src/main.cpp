@@ -4,8 +4,6 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
-#include <SerialTransfer.h>
-#include <Wire.h>
 #include "custom_servo.h"
 #include "webHandler.h"
 
@@ -25,14 +23,7 @@ custom_servo y_servo;      // Custom servo object for y movement
 WiFiManager wifi;          // WiFiManager object
 WiFiClient espClient;      // WiFiClient object
 AsyncWebServer server(80); // Create web server object
-SerialTransfer myTransfer; // Serial Transfer object for Serial coms
 int movement;              // Global variable for storing movement values
-
-struct __attribute__((packed)) STRUCT
-{
-  char direction; // Incoming direction command
-  int value;      // Incoming value command
-} rxStruct;       // Struct for incoming data
 
 void setup()
 {
@@ -100,34 +91,25 @@ void setup()
   server.begin();
   Serial.println("Web Server Initialized!");
 
-  // Initialize SerialTransfer
-  myTransfer.begin(Serial);
-  Serial.println("SerialTransfer Initialized!");
+  Serial.println("SETUP COMPLETE!");
 }
 
 void loop()
 {
-  // serialIO();
   wifi.process();
   digitalWrite(LED_BUILTIN, WiFi.status() == WL_CONNECTED); // Turn on onboard LED as wifi status indicator
-
-  if (myTransfer.available())
-  {
-    myTransfer.rxObj(rxStruct, sizeof(rxStruct));
-    Serial.print(rxStruct.direction);
-  }
+  serialIO();
 }
 
 void serialIO()
 {
-  String userInput = "";
-  int output;
   if (Serial.available())
   {
-    userInput = Serial.readStringUntil('\n');
-    movement = userInput.toInt();
-    x_servo.moveToStep(movement);
-    y_servo.moveToStep(movement);
+    String message_received = Serial.readString();
+    Serial.print("Echo: ");
+    Serial.println(message_received);
+    servoJog(message_received);
+    Serial.println("~");
   }
 }
 
